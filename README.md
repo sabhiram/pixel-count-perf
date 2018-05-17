@@ -1,4 +1,4 @@
-# cuda-experiments
+# pixel-count-perf
 
 A random collection of programs that implement a function that given a file with a raw RGBA8 buffer of data, returns the number of pixels that have all bits set (R == 0xFF, G == 0xFF, B == 0xFF and A == 0xFF).
 
