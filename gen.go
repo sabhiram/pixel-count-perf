@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"image"
 	"image/color"
+	"image/png"
 	"io/ioutil"
 	"math/rand"
 	"os"
@@ -65,26 +66,26 @@ func main() {
 		p    float64
 		fn   string
 	}{
-		{128, 128, 0.00, "gen/small_00p_0"},
-		{128, 128, 0.25, "gen/small_25p_0"},
-		{128, 128, 0.50, "gen/small_50p_0"},
-		{128, 128, 0.75, "gen/small_75p_0"},
-		{128, 128, 0.95, "gen/small_95p_0"},
-		{128, 128, 1.00, "gen/small_100p_0"},
+		// {128, 128, 0.00, "gen/small_00p_0"},
+		// {128, 128, 0.25, "gen/small_25p_0"},
+		// {128, 128, 0.50, "gen/small_50p_0"},
+		// {128, 128, 0.75, "gen/small_75p_0"},
+		// {128, 128, 0.95, "gen/small_95p_0"},
+		// {128, 128, 1.00, "gen/small_100p_0"},
 
-		{2048, 2048, 0.00, "gen/large_00p_0"},
-		{2048, 2048, 0.25, "gen/large_25p_0"},
-		{2048, 2048, 0.50, "gen/large_50p_0"},
-		{2048, 2048, 0.75, "gen/large_75p_0"},
-		{2048, 2048, 0.95, "gen/large_95p_0"},
-		{2048, 2048, 1.00, "gen/large_100p_0"},
+		// {2048, 2048, 0.00, "gen/large_00p_0"},
+		// {2048, 2048, 0.25, "gen/large_25p_0"},
+		// {2048, 2048, 0.50, "gen/large_50p_0"},
+		// {2048, 2048, 0.75, "gen/large_75p_0"},
+		// {2048, 2048, 0.95, "gen/large_95p_0"},
+		// {2048, 2048, 1.00, "gen/large_100p_0"},
 
 		{2048 * 4, 2048 * 4, 0.00, "gen/behemoth_00p_0"},
 		{2048 * 4, 2048 * 4, 0.25, "gen/behemoth_25p_0"},
-		{2048 * 4, 2048 * 4, 0.50, "gen/behemoth_50p_0"},
-		{2048 * 4, 2048 * 4, 0.75, "gen/behemoth_75p_0"},
-		{2048 * 4, 2048 * 4, 0.95, "gen/behemoth_95p_0"},
-		{2048 * 4, 2048 * 4, 1.00, "gen/behemoth_100p_0"},
+		// {2048 * 4, 2048 * 4, 0.50, "gen/behemoth_50p_0"},
+		// {2048 * 4, 2048 * 4, 0.75, "gen/behemoth_75p_0"},
+		// {2048 * 4, 2048 * 4, 0.95, "gen/behemoth_95p_0"},
+		// {2048 * 4, 2048 * 4, 1.00, "gen/behemoth_100p_0"},
 	} {
 		for _, desc := range []struct {
 			fn  func(int, int, float64) (*image.RGBA, error)
@@ -95,16 +96,21 @@ func main() {
 		} {
 			im, err := desc.fn(tc.w, tc.h, tc.p)
 
-			// pngFn := fmt.Sprintf("%s_%s.png", tc.fn, desc.pfx)
-			// f, err := os.Create(pngFn)
-			// fatalOnError(err)
-			// defer f.Close()
-			// fatalOnError(png.Encode(f, im))
-			// fmt.Printf("Wrote file %s\n", pngFn)
-
 			rawFn := fmt.Sprintf("%s_%s.raw", tc.fn, desc.pfx)
-			ioutil.WriteFile(rawFn, im.Pix, 0655)
-			fmt.Printf("Wrote file %s\n", rawFn)
+			if err := os.Stat(rawFn); os.IsNotExist(err) {
+				ioutil.WriteFile(rawFn, im.Pix, 0655)
+				fmt.Printf("Wrote file %s\n", rawFn)
+			}
+
+			pngFn := fmt.Sprintf("%s_%s.png", tc.fn, desc.pfx)
+			if err := os.Stat(pngFn); os.IsNotExist(err) {
+				f, err := os.Create(pngFn)
+				fatalOnError(err)
+				defer f.Close()
+				fatalOnError(png.Encode(f, im))
+				fmt.Printf("Wrote file %s\n", pngFn)
+			}
+
 		}
 	}
 }
